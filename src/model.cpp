@@ -1,5 +1,11 @@
 #include "nn/model.hpp"
-#include <Eigen/Dense>
+#include "nn/loss.hpp"
+#include "nn/utils.hpp"
+
+#include <algorithm>
+#include <numeric>
+#include <random>
+#include <iostream>
 
 void NeuralNetwork::add(std::unique_ptr<Layer> layer) { layers.push_back(std::move(layer)); }
 
