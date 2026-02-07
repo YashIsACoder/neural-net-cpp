@@ -21,4 +21,4 @@ private:
   // gradients
   Eigen::MatrixXd dW;
   Eigen::MatrixXd db; 
-}
+};

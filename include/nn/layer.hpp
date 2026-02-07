@@ -1,3 +1,5 @@
+#pragma once 
+#include <Eigen/Dense>
 
 class Layer {
 public:
@@ -5,4 +7,4 @@ public:
   virtual Eigen::MatrixXd delete(const Eigen::MatrixXd& Y) = 0;
   virtual void update(double lr);
   virtual ~Layer() = default;
-}
+};
