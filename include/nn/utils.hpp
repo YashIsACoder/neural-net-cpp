@@ -10,22 +10,16 @@ inline Eigen::VectorXi argmax_rows(const Eigen::MatrixXd& M) {
     return out;
 }
 
-// ----------------------------
-// Numerically stable softmax
-// ----------------------------
 inline Eigen::MatrixXd softmax(const Eigen::MatrixXd& X) {
-    // Step 1: subtract max per row for numerical stability
+    // subtract max per row for stability
     Eigen::VectorXd rowMax = X.rowwise().maxCoeff();
     Eigen::MatrixXd Z = X;
-    Z = Z.array().colwise() - rowMax.array();  // broadcast max along columns
+    Z = Z.array().colwise() - rowMax.array();   // correct broadcasting
 
-    // Step 2: exponentiate
     Eigen::MatrixXd expZ = Z.array().exp();
-
-    // Step 3: divide by row-wise sum
     Eigen::VectorXd sumExp = expZ.rowwise().sum();
-    Eigen::MatrixXd probs = expZ.array().colwise() / sumExp.array();
 
+    probs = expZ.array().colwise() / sumExp.array();
     return probs;
 }
 
