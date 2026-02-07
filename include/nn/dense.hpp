@@ -1,6 +1,6 @@
 #pragma once
 
-#include "layer.hpp"
+#include "nn/layer.hpp"
 #include <Eigen/Dense>
 
 class Dense : public Layer {
@@ -8,7 +8,7 @@ public:
   Dense(std::size_t input_dim, std::size_t output_dim);
 
   Eigen::MatrixXd forward(const Eigen::MatrixXd& X) override;
-  Eigen::MatrixXd backward(const Eigen::MatrixXd& Y) override;
+  Eigen::MatrixXd backward(const Eigen::MatrixXd& dY) override;
   void update(double lr) override;
   
 private:
