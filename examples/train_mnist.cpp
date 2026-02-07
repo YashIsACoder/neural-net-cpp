@@ -33,7 +33,7 @@ int main() {
             mnist.X_train,
             mnist.y_train,
             25,
-            64,
+            256,
             0.01
         );
 
