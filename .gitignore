@@ -1,1 +1,12 @@
-data/
+# Ignore CMake build directories
+build/
+bin/
+out/
+# Ignore CMake cache and generated files
+CMakeCache.txt
+CMakeFiles/
+*.cmake
+# Ignore other common build artifacts
+*.o
+*.a
+*.so
