@@ -25,6 +25,7 @@ void NeuralNetwork::fit(const Eigen::MatrixXd& X,
     std::shuffle(indices.begin(), indices.end(), gen);
 
     double epoch_loss{};
+    int num_batches{};
 
     for (std::size_t i{}; i < N; i += batch_size) {
       std::size_t end = std::min(i + batch_size, N);
@@ -48,11 +49,25 @@ void NeuralNetwork::fit(const Eigen::MatrixXd& X,
       std::cout << "Sum: " << out.row(0).sum() << "\n";
       std::cout << "Label row 0: " << y_batch.row(0) << "\n";
       */
+      
+      /*
+      std::cout << "y_batch row 0: " << y_batch.row(0) << "\n";
+      std::cout << "y_batch sum:   " << y_batch.row(0).sum() << "\n";
+      std::cout << "-----------NEXT PROBLEM DIAGNOSTIC------" << '\n';
+      */
 
-      Eigen::MatrixXd logits = layers.back()->forward(X_batch);
+      Eigen::MatrixXd logits = out;
       Eigen::MatrixXd probs = softmax(logits);
+      
+      /*
+      std::cout << "logits row 0: " << out.row(0) << "\n";
+      std::cout << "probs row 0:  " << probs.row(0) << "\n";
+      std::cout << "probs sum:    " << probs.row(0).sum() << "\n";
+      std::cout << "-----------NEXT PROBLEM DIAGNOSTIC------" << '\n';
+      */
 
-      epoch_loss = CrossEntropyLoss::value(y_batch, out);
+      epoch_loss = CrossEntropyLoss::value(y_batch, probs);
+      num_batches++;
 
       // backward
       Eigen::MatrixXd grad = CrossEntropyLoss::gradient(y_batch, probs);
@@ -64,7 +79,7 @@ void NeuralNetwork::fit(const Eigen::MatrixXd& X,
         layer->update(lr);
     }
 
-    epoch_loss /= static_cast<double>(N / batch_size);
+    epoch_loss /= num_batches;
     std::cout << "Epoch " << epoch + 1 << " | Loss : "
               << epoch_loss << std::endl;
   }

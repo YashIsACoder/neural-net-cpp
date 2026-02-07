@@ -1,6 +1,12 @@
 #pragma once
+#include <random>
 
 #include <Eigen/Dense>
+
+inline std::mt19937& global_rng() {
+    static std::mt19937 gen(42);
+    return gen;
+}
 
 inline Eigen::VectorXi argmax_rows(const Eigen::MatrixXd& M) {
     Eigen::VectorXi out(M.rows());
@@ -19,7 +25,7 @@ inline Eigen::MatrixXd softmax(const Eigen::MatrixXd& X) {
     Eigen::MatrixXd expZ = Z.array().exp();
     Eigen::VectorXd sumExp = expZ.rowwise().sum();
 
-    probs = expZ.array().colwise() / sumExp.array();
+    auto probs = expZ.array().colwise() / sumExp.array();
     return probs;
 }
 

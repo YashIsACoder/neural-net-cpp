@@ -1,26 +1,27 @@
 #include "nn/dense.hpp"
 #include <random>
 #include <cassert>
+#include <iostream>
+#include "nn/utils.hpp"
 
-Dense::Dense(std::size_t input_dim, std::size_t output_dim) 
+Dense::Dense(std::size_t input_dim, std::size_t output_dim)
   : W(input_dim, output_dim),
     b(output_dim),
     dW(input_dim, output_dim),
     db(output_dim)
 {
-  // Xavier init. to avoid vanishing gradient 
-  double limit { std::sqrt(6 / (input_dim + output_dim)) };
+    // He initialization (best for ReLU)
+    double stddev = std::sqrt(2.0 / static_cast<double>(input_dim));
 
-  // random generation of weights
-  std::mt19937 gen(std::random_device{}());
-  std::uniform_real_distribution<double> dist(-limit, limit);
-  for (int i{}; i < W.rows(); ++i)
-    for (int j{}; j < W.cols(); ++j)
-      W(i, j) = dist(gen);
+    std::mt19937 gen(std::random_device{}());
+    std::normal_distribution<double> dist(0.0, stddev);
 
-  b.setZero();
+    for (int i = 0; i < W.rows(); ++i)
+        for (int j = 0; j < W.cols(); ++j)
+            W(i, j) = dist(global_rng());
+
+    b.setZero();
 }
-    
 
 Eigen::MatrixXd Dense::forward(const Eigen::MatrixXd& X) {
   // need to cache for backprop later
@@ -33,22 +34,19 @@ Eigen::MatrixXd Dense::forward(const Eigen::MatrixXd& X) {
   return Z;
 }
 
+
 Eigen::MatrixXd Dense::backward(const Eigen::MatrixXd& dY) {
-  assert(X_cache.rows() == dY.rows());
+    int N = X_cache.rows();
 
-  std::size_t batch_size = X_cache.rows();
+    dW = X_cache.transpose() * dY / N;
+    db = dY.colwise().mean();
 
-  // calculate grads 
-  dW = (X_cache.transpose() * dY) / static_cast<double>(batch_size);
-  db = dY.colwise().mean();
-
-  // grad wrt input
-  Eigen::MatrixXd dX = dY * W.transpose();
-  return dX;
+    return dY * W.transpose();
 }
 
 void Dense::update(double lr) {
-  // save memory wt noalias 
-  W.noalias() -= lr * dW;
-  b.noalias() -= lr * db;
+    // std::cout << "W norm before: " << W.norm() << "\n";
+    W -= lr * dW;
+    b -= lr * db;
+    // std::cout << "W norm after:  " << W.norm() << "\n";
 }
