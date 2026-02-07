@@ -1,2 +1,0 @@
-/usr/bin/ar qc libnn.a CMakeFiles/nn.dir/src/dense.cpp.o CMakeFiles/nn.dir/src/activations.cpp.o CMakeFiles/nn.dir/src/model.cpp.o CMakeFiles/nn.dir/src/mnist.cpp.o
-/usr/bin/ranlib libnn.a
