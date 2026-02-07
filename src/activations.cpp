@@ -16,16 +16,20 @@ Eigen::MatrixXd ReLU::backward(const Eigen::MatrixXd& dY) {
   return dX;
 }
 
+
 Eigen::MatrixXd Softmax::forward(const Eigen::MatrixXd& X) {
-  // for stability
-  Eigen::MatrixXd Z { X.rowwise() - X.rowwise().maxCoeff() };
+    // subtract max per row for stability
+    Eigen::VectorXd rowMax = X.rowwise().maxCoeff();
+    Eigen::MatrixXd Z = X;
+    Z = Z.array().colwise() - rowMax.array();   // correct broadcasting
 
-  Eigen::MatrixXd expZ { Z.array().expwise() };
-  Eigen::MatrixXd sumExp { Z.rowwise().sum() };
+    Eigen::MatrixXd expZ = Z.array().exp();
+    Eigen::VectorXd sumExp = expZ.rowwise().sum();
 
-  probs = expZ.array().colwise() / sumExp.array();
-
-  return probs;
+    probs = expZ.array().colwise() / sumExp.array();
+    return probs;
 }
 
-Eigen::MatrixXd Softmax::backward(const Eigen::MatrixXd dY) { return dY; }
+
+
+Eigen::MatrixXd Softmax::backward(const Eigen::MatrixXd& dY) { return dY; }

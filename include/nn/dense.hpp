@@ -14,11 +14,11 @@ public:
 private:
   // parameter
   Eigen::MatrixXd W; // (input_dim, output_dim) Weights
-  Eigen::MatrixXd b; // (output_dim) bias
+  Eigen::VectorXd b; // (output_dim) bias
   
   Eigen::MatrixXd X_cache;
 
   // gradients
   Eigen::MatrixXd dW;
-  Eigen::MatrixXd db; 
+  Eigen::VectorXd db; 
 };

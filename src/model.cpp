@@ -10,12 +10,12 @@
 void NeuralNetwork::add(std::unique_ptr<Layer> layer) { layers.push_back(std::move(layer)); }
 
 void NeuralNetwork::fit(const Eigen::MatrixXd& X, 
-                        const Eigen::MatrixXd& dY,
+                        const Eigen::MatrixXd& y,
                         std::size_t epochs,
                         std::size_t batch_size,
                         double lr) 
 {
-  std::size_t N { X.rows() };
+  std::size_t N = X.rows();
   std::vector<std::size_t> indices(N);
   std::iota(indices.begin(), indices.end(), 0); // init vec
   
@@ -27,8 +27,8 @@ void NeuralNetwork::fit(const Eigen::MatrixXd& X,
     double epoch_loss{};
 
     for (std::size_t i{}; i < N; i += batch_size) {
-      std::size_t end { std::min(i + batch_size, N) };
-      std::size_t bs { end - i };
+      std::size_t end = std::min(i + batch_size, N);
+      std::size_t bs = end - i;
 
       Eigen::MatrixXd X_batch(bs, X.cols());
       Eigen::MatrixXd y_batch(bs, y.cols());
@@ -42,10 +42,17 @@ void NeuralNetwork::fit(const Eigen::MatrixXd& X,
       Eigen::MatrixXd out = X_batch;
       for (auto& layer : layers)
         out = layer->forward(out);
+      
+      /*
+      std::cout << "Output row 0: " << out.row(0) << "\n"; 
+      std::cout << "Sum: " << out.row(0).sum() << "\n";
+      std::cout << "Label row 0: " << y_batch.row(0) << "\n";
+      */ 
 
-      epoch_loss = CrossEntropyLoss::value(y_batch, out);
+      epoch_loss += CrossEntropyLoss::value(y_batch, out);
 
       // backward
+      Eigen::MatrixXd grad = CrossEntropyLoss::gradient(y_batch, out);
       for (int l { static_cast<int>(layers.size()) - 1 }; l >= 0; --l)
         grad = layers[l]->backward(grad);
 
@@ -61,7 +68,7 @@ void NeuralNetwork::fit(const Eigen::MatrixXd& X,
 }
 
 Eigen::MatrixXd NeuralNetwork::predict_proba(const Eigen::MatrixXd& X) {
-  Eigen::MatrixXd out { X };
+  Eigen::MatrixXd out = X;
   for (auto& layer : layers)
     out = layer->forward(out);
   return out;
@@ -75,7 +82,7 @@ Eigen::VectorXi NeuralNetwork::predict(const Eigen::MatrixXd& X) {
 double NeuralNetwork::score(const Eigen::MatrixXd& X, 
                             const Eigen::MatrixXd& y)
 {
-  Eigen::VectorXi y_pred { predict(X) };
-  Eigen::VectorXi y_true { argmax_rows(y) };
+  Eigen::VectorXi y_pred = predict(X);
+  Eigen::VectorXi y_true = argmax_rows(y);
   return accuracy(y_true, y_pred);
 }

@@ -14,7 +14,7 @@ Dense::Dense(std::size_t input_dim, std::size_t output_dim)
   // random generation of weights
   std::mt19937 gen(std::random_device{}());
   std::uniform_real_distribution<double> dist(-limit, limit);
-  for (int i{}; i < W.rows; ++i)
+  for (int i{}; i < W.rows(); ++i)
     for (int j{}; j < W.cols(); ++j)
       W(i, j) = dist(gen);
 
@@ -36,7 +36,7 @@ Eigen::MatrixXd Dense::forward(const Eigen::MatrixXd& X) {
 Eigen::MatrixXd Dense::backward(const Eigen::MatrixXd& dY) {
   assert(X_cache.rows() == dY.rows());
 
-  std::size_t batch_size { X_cache.rows() };
+  std::size_t batch_size = X_cache.rows();
 
   // calculate grads 
   dW = (X_cache.transpose() * dY) / static_cast<double>(batch_size);

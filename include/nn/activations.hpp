@@ -16,10 +16,10 @@ private:
 class Softmax : public Layer {
 public:
   Eigen::MatrixXd forward(const Eigen::MatrixXd& X) override;
-  Eigen::MatrixXd backward(const EigenMatrixXd& dY) override;
+  Eigen::MatrixXd backward(const Eigen::MatrixXd& dY) override;
   void update(double lr) override {};
 
 private:
   Eigen::MatrixXd probs;
-}
+};
 

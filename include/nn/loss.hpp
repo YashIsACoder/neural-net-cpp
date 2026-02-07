@@ -12,9 +12,9 @@ public:
     assert(y_true.cols() == y_pred.cols());
 
     const double eps {1e-9};
-    std::size_t N { y_true.rows() };
+    std::size_t N = y_true.rows();
 
-    double loss { -(y_true.array() *(y_pred.array() + eps).log()).sum() };
+    double loss = -(y_true.array() *(y_pred.array() + eps).log()).sum();
 
     return loss / static_cast<double>(N);
   }
@@ -25,7 +25,7 @@ public:
     assert(y_true.rows() == y_true.rows());
     assert(y_true.cols() == y_pred.cols());
 
-    std::size_t N { y_true.rows() };
+    std::size_t N = y_true.rows();
     return (y_pred - y_true) / static_cast<double>(N);
   }
 };
