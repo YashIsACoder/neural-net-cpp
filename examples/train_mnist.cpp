@@ -25,7 +25,7 @@ int main() {
         model.add(std::make_unique<ReLU>());
 
         model.add(std::make_unique<Dense>(64, 10));
-        model.add(std::make_unique<Softmax>());
+        //model.add(std::make_unique<Softmax>());
 
         // Train
         std::cout << "Training..." << std::endl;
@@ -33,7 +33,7 @@ int main() {
             mnist.X_train,
             mnist.y_train,
             25,
-            256,
+            64,
             0.01
         );
 

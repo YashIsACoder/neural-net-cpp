@@ -47,12 +47,15 @@ void NeuralNetwork::fit(const Eigen::MatrixXd& X,
       std::cout << "Output row 0: " << out.row(0) << "\n"; 
       std::cout << "Sum: " << out.row(0).sum() << "\n";
       std::cout << "Label row 0: " << y_batch.row(0) << "\n";
-      */ 
+      */
 
-      epoch_loss += CrossEntropyLoss::value(y_batch, out);
+      Eigen::MatrixXd logits = layers.back()->forward(X_batch);
+      Eigen::MatrixXd probs = softmax(logits);
+
+      epoch_loss = CrossEntropyLoss::value(y_batch, out);
 
       // backward
-      Eigen::MatrixXd grad = CrossEntropyLoss::gradient(y_batch, out);
+      Eigen::MatrixXd grad = CrossEntropyLoss::gradient(y_batch, probs);
       for (int l { static_cast<int>(layers.size()) - 1 }; l >= 0; --l)
         grad = layers[l]->backward(grad);
 
